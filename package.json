@@ -1,0 +1,21 @@
+{
+  "name": "datatables-column-filter",
+  "version": "1.0.0",
+  "description": "Column filter plugin for jQuery DataTables",
+  "main": "DTColumnFilter.js",
+  "files": [
+    "DTColumnFilter.js",
+    "README.md"
+  ],
+  "keywords": [
+    "datatables",
+    "filter",
+    "column",
+    "datatables-plugin"
+  ],
+  "author": "EvilKraft",
+  "license": "MIT",
+  "peerDependencies": {
+    "datatables.net": ">=2.0.0"
+  }
+}
