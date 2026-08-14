@@ -1,12 +1,30 @@
-function DTColumnFilter( api ) {
+function attachColumnFilter( settings ) {
+    const api = new DataTable.Api(settings);
+    const init = api.init();
+
+    // noinspection JSUnresolvedReference
+    const enabled = init.DTColumnFilter ?? DataTable.defaults.DTColumnFilter ?? true;
+
+    if (!enabled) {
+        return;
+    }
+
+    // Защита от повторной инициализации
+    if (settings._columnFilterAttached) {
+        return;
+    }
+    settings._columnFilterAttached = true;
+
+
     // noinspection JSUnresolvedReference
     const selectFilter = api.ajax.json().select_filter ?? [];
     const escapeRegex = DataTable.util.escapeRegex;
 
+
     api.columns('.select-filter').every( function () {
         const column = this;
         const headerNode = column.header();
-        const title = headerNode.innerText;
+        const title = headerNode?.textContent?.trim() || '';
         const titleAll   = title + ' (All)';
         const titleEmpty = title + ' (Empty)';
 
@@ -64,12 +82,20 @@ function DTColumnFilter( api ) {
     });
 }
 
-document.addEventListener('init.dt', function (e) {
-    const table = e.target;
-    const api = new DataTable.Api(table);
+// Глобальное подключение для всех таблиц
+if (typeof DataTable.on === 'function') {
+    DataTable.on('init', (e, settings) => {
+        attachColumnFilter(settings);
+    });
+} else {
+    // Fallback, если вдруг глобального DataTable.on нет
+    const oldInitComplete = DataTable.defaults.initComplete;
 
-    // noinspection JSUnresolvedReference
-    if (!api.init().DTColumnFilter || !DataTable.defaults.DTColumnFilter) {
-        new DTColumnFilter(api);
-    }
-});
+    DataTable.defaults.initComplete = function (settings, json) {
+        if (typeof oldInitComplete === 'function') {
+            oldInitComplete.call(this, settings, json);
+        }
+
+        attachColumnFilter(settings);
+    };
+}
