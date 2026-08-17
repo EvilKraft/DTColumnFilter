@@ -1,9 +1,12 @@
+/*import DataTable from 'datatables.net-bs5';*/
+
+
 function attachColumnFilter( settings ) {
     const api = new DataTable.Api(settings);
     const init = api.init();
 
     // noinspection JSUnresolvedReference
-    const enabled = init.DTColumnFilter ?? DataTable.defaults.DTColumnFilter ?? true;
+    const enabled = init?.DTColumnFilter ?? DataTable.defaults.DTColumnFilter ?? true;
 
     if (!enabled) {
         return;
@@ -17,7 +20,7 @@ function attachColumnFilter( settings ) {
 
 
     // noinspection JSUnresolvedReference
-    const selectFilter = api.ajax.json().select_filter ?? [];
+    const selectFilter = api.ajax.json()?.select_filter ?? [];
     const escapeRegex = DataTable.util.escapeRegex;
 
 
@@ -82,25 +85,19 @@ function attachColumnFilter( settings ) {
     });
 }
 
-// Глобальное подключение для всех таблиц
-/*
-if (typeof DataTable.on === 'function') {
-    DataTable.on('init', (e, settings) => {
-        attachColumnFilter(settings);
-    });
-} else {
-    // Fallback, если вдруг глобального DataTable.on нет
-    const oldInitComplete = DataTable.defaults.initComplete;
 
-    DataTable.defaults.initComplete = function (settings, json) {
-        if (typeof oldInitComplete === 'function') {
-            oldInitComplete.call(this, settings, json);
-        }
-
-        attachColumnFilter(settings);
-    };
-}
-*/
 $(document).on( 'init.dt', function ( e, settings ) {
     attachColumnFilter( settings );
 });
+
+
+/*const originalInit = DataTable.defaults.initComplete;
+DataTable.defaults.initComplete = function (settings, json) {
+    if (typeof originalInit === 'function') {
+        originalInit.call(this, settings, json);
+    }
+
+    attachColumnFilter(settings);
+};*/
+
+
